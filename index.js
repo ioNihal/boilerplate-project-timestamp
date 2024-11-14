@@ -25,9 +25,14 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.get('/api/:date', (req, res, next) => {
-  const d = new Date(req.params.date);
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  let d = null;
+  if (req.params.date) {
+    d = new Date(req.params.date);
+  } else {
+    d = Date.now();
+  }
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   let timeStamp = `${days[d.getUTCDay()]}, ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}:${String(d.getUTCSeconds()).padStart(2, '0')} GMT`;
   req.stamp = { "unix": d.getTime(), "utc": timeStamp };
