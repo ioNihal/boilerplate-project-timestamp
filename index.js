@@ -24,22 +24,35 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api/:date', (req, res, next) => {
-  let d = null;
-  if (req.params.date) {
-    d = new Date(req.params.date);
-  } else {
-    d = Date.now();
-  }
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+app.get("/api", (req, res) => {
+  let now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString(),
+  });
+});
 
-  let timeStamp = `${days[d.getUTCDay()]}, ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}:${String(d.getUTCSeconds()).padStart(2, '0')} GMT`;
-  req.stamp = { "unix": d.getTime(), "utc": timeStamp };
-  next();
-}, (req, res) => {
-  res.json(req.stamp);
-})
+app.get("/api/:date", (request, response) => {
+  const inputDate = request.params.date;
+  const parsedDate = new Date(inputDate);
+
+  if (parseInt(inputDate) > 10000) {
+    const unixTimestamp = new Date(parseInt(inputDate));
+    return response.json({
+      unix: unixTimestamp.getTime(),
+      utc: unixTimestamp.toUTCString(),
+    });
+  }
+
+  if (isNaN(parsedDate.getTime())) {
+    return response.json({ error: "Invalid Date" });
+  }
+
+  response.json({
+    unix: parsedDate.valueOf(),
+    utc: parsedDate.toUTCString(),
+  });
+});
 
 
 
