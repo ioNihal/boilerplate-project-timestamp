@@ -24,6 +24,18 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get('/api/:date', (req, res, next) => {
+  const d = new Date(req.params.date);
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  let timeStamp = `${days[d.getUTCDay()]}, ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()} GMT`;
+  req.stamp = { "unix": d.getMilliseconds(), "utc": timeStamp };
+  next();
+}, (req, res) => {
+  res.json(req.stamp);
+})
+
 
 
 // Listen on port set in environment variable or default to 3000
